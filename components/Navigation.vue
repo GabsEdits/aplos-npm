@@ -37,6 +37,13 @@
             <SourceCode />
           </a>
         </li>
+        <li>
+          <select v-model="selectedLanguage" @change="changeLanguage">
+            <option v-for="language in languages" :value="language.locale">
+              {{ language.name }}
+            </option>
+          </select>
+        </li>
       </ul>
     </nav>
   </header>
@@ -130,6 +137,36 @@ header {
             color: var(--color-accent);
           }
         }
+
+        select {
+          transform: scale(1);
+          transition:
+            color 0.7s ease,
+            transform 100ms ease;
+          margin: 0 0.3125rem;
+          color: var(--color-text-secondary);
+          font-weight: 600;
+          font-size: 14px;
+          letter-spacing: -0.015rem;
+          text-align: center;
+          text-decoration: none;
+          background-color: transparent;
+          border: 0;
+          cursor: pointer;
+
+          &:hover {
+            color: var(--color-accent);
+          }
+
+          &:active {
+            transform: scale(0.9);
+            color: var(--color-accent);
+          }
+
+          &::after {
+            display: none;
+          }
+        }
       }
     }
   }
@@ -195,4 +232,42 @@ onMounted(() => {
 });
 
 const navigation = theme.value.nav.links;
+
+const languages = ref(
+  theme.value.languages.map((language) => ({
+    name: language.name,
+    locale: language.locale,
+  })),
+);
+const selectedLanguage = ref(getLanguageFromUrl());
+
+function getLanguageFromUrl() {
+  const path = window.location.pathname;
+  const language = path.split("/")[1];
+  const availableLanguages = languages.value.map((lang) => lang.locale);
+  if (availableLanguages.includes(language)) {
+    return language;
+  } else {
+    return languages.value.find((lang) => !lang.locale)?.locale || languages.value[0].locale;
+  }
+}
+
+const changeLanguage = () => {
+  console.log("Language changed to:", selectedLanguage.value);
+
+  if (typeof window !== "undefined") {
+    const language = languages.value.find((lang) => lang.locale === selectedLanguage.value);
+    if (language && language.locale !== false) {
+      window.location.href = `/${selectedLanguage.value}/`;
+    } else {
+      window.location.href = "/";
+    }
+  }
+};
+
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    currentPath.value = window.location.pathname;
+  }
+});
 </script>

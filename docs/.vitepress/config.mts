@@ -14,6 +14,12 @@ export default defineConfig({
   themeConfig: {
     links: "icons",
     author: "Gabriel Cozma",
+
+    languages: [
+      { name: "English", locale: false },
+      { name: "Romanian", locale: "ro" },
+    ],
+
     articles: {
       giscus: {
         repo: "GabsEdits/aplos",
